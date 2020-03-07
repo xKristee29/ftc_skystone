@@ -269,6 +269,7 @@ public class HardwareConfig {
     public void lowerLiftServo() {
         servoLiftRaise.setPosition(1);
     }
+
     public void startPumpHoming() {
         if(!swPump.isPressed()){
             motorPump.setPower(-0.3);
@@ -279,7 +280,7 @@ public class HardwareConfig {
     }
 
     public void startSuction() {
-        if(!isPumpHoming && swPump.isPressed()) {
+        if(!isPumpHoming) {
             motorPump.setTargetPosition(250);
             motorPump.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorPump.setPower(1);
@@ -293,33 +294,30 @@ public class HardwareConfig {
     }
 
     public void rotateTurretLeft() {
-        if(currentLiftPos < -60) {
-            motorTurret.setTargetPosition(-660);
-            motorTurret.setPower(1);
-            motorTurret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            turretPos = -660;
-            isTurretActive = true;
-        }
+        motorTurret.setTargetPosition(-660);
+        motorTurret.setPower(0);
+        motorTurret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorTurret.setPower(1);
+        turretPos = -660;
+        isTurretActive = true;
     }
 
     public void rotateTurretRight() {
-        if(currentLiftPos < -60) {
-            motorTurret.setTargetPosition(660);
-            motorTurret.setPower(1);
-            motorTurret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            turretPos = 660;
-            isTurretActive = true;
-        }
+        motorTurret.setTargetPosition(660);
+        motorTurret.setPower(0);
+        motorTurret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorTurret.setPower(1);
+        turretPos = 660;
+        isTurretActive = true;
     }
 
     public void rotateTurretCenter() {
-        if(currentLiftPos < -60) {
-            motorTurret.setTargetPosition(0);
-            motorTurret.setPower(1);
-            motorTurret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            turretPos = 0;
-            isTurretActive = true;
-        }
+        motorTurret.setTargetPosition(0);
+        motorTurret.setPower(0);
+        motorTurret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorTurret.setPower(1);
+        turretPos = 0;
+        isTurretActive = true;
     }
 
     public void setTurretPower(double speed){

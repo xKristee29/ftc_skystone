@@ -42,6 +42,11 @@ public class Mecanum {
         this.rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        this.leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.leftRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         this.leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -74,7 +79,7 @@ public class Mecanum {
     public void moveXYR(double x, double y,  double rotateSpeed) {
         double strafeDirection = FastMath.fast_atan2(-x, -y);
         if(Double.isNaN(strafeDirection)) strafeDirection = 0;
-        double strafeSpeed = Math.hypot(x, y);
+        double strafeSpeed = Math.hypot(Math.abs(x), Math.abs(y));
         if(Double.isNaN(strafeSpeed)) strafeSpeed = 0;
         final double leftFrontSpeed     =  (strafeSpeed * Math.sin(strafeDirection + QUARTER_PI)) - rotateSpeed;
         final double rightFrontSpeed    =  (strafeSpeed * Math.cos(strafeDirection + QUARTER_PI)) + rotateSpeed;

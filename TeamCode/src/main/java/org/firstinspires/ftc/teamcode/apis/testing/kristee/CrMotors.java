@@ -11,9 +11,9 @@ public class CrMotors {
     // Declare motors and the control object
     public Mecanum go = null;
     public DcMotor  leftFront = null,
-                    rightFront = null,
-                    leftRear = null,
-                    rightRear = null;
+            rightFront = null,
+            leftRear = null,
+            rightRear = null;
 
     // Set strafe direction
     double strafe = Math.PI/2;

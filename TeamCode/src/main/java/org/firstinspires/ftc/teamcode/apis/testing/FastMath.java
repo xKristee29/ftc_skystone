@@ -24,6 +24,10 @@ public class FastMath
      **/
     public static double fast_atan2(double y, double x)
     {
+        if(x == 0 && y > 0) return Math.PI / 2;
+        else if(x == 0 && y < 0) return -Math.PI / 2;
+        else if(x > 0 && y == 0) return 0;
+        else if(x < 0 && y == 0) return Math.PI;
         double d2 = x*x + y*y;
 
         // Bail out if d2 is NaN, zero or subnormal

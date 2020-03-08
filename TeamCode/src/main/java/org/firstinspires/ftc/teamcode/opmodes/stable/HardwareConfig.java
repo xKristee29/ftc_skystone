@@ -40,13 +40,12 @@ public class HardwareConfig {
     public TouchSensor switchBuildPlateRear;
 
     public ColorSensor colorSensorFront = null;
-    public ColorSensor colorSensorBottom = null;
 
     //LIFT
     public DcMotor motorLift;
     public TouchSensor liftHomingSwitch;
     final int LIMIT_MIN_LIFT = -40;
-    final int LIMIT_MAX_LIFT = -4800;
+    final int LIMIT_MAX_LIFT = -5000;
     final double SPEED_LIFT = 0.5;
     public Servo servoLiftRaise;
 
@@ -70,8 +69,9 @@ public class HardwareConfig {
 
     public HxIMU gyro;
 
-    public final double SPEED_MECANUM_STRAFE = 0.5;
-    public final double SPEED_MECANUM_ROTATION = 0.5;
+    public double SPEED_MECANUM_X = 0.6;
+    public double SPEED_MECANUM_Y = 0.5;
+    public double SPEED_MECANUM_ROTATION = 0.3;
     public int turretPos = 0;
     public boolean isTurretActive = false;
 
@@ -146,7 +146,6 @@ public class HardwareConfig {
 
         swBrick = hardwareMap.get(TouchSensor.class,"swBrick");
 
-        colorSensorBottom = hardwareMap.get(ColorSensor.class, "sc2");
         colorSensorFront = hardwareMap.get(ColorSensor.class, "sc1");
 
         gyro = new HxIMU();
@@ -211,7 +210,7 @@ public class HardwareConfig {
             isLiftHoming = true;
             liftRunMode = DcMotor.RunMode.RUN_USING_ENCODER;
             motorLift.setMode(liftRunMode);
-            motorLift.setPower(0.3);
+            motorLift.setPower(0.5);
         }
     }
 
@@ -272,15 +271,17 @@ public class HardwareConfig {
 
     public void startPumpHoming() {
         if(!swPump.isPressed()){
-            motorPump.setPower(-0.3);
             motorPump.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorPump.setPower(-0.3);
             isPumpHoming = true;
         }
+        else{
+            motorPump.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
 
     public void startSuction() {
-        if(!isPumpHoming) {
+        if(!isPumpHoming && swPump.isPressed()) {
             motorPump.setTargetPosition(250);
             motorPump.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorPump.setPower(1);
@@ -294,8 +295,8 @@ public class HardwareConfig {
     }
 
     public void rotateTurretLeft() {
-        motorTurret.setTargetPosition(-660);
         motorTurret.setPower(0);
+        motorTurret.setTargetPosition(-660);
         motorTurret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorTurret.setPower(1);
         turretPos = -660;
@@ -303,8 +304,8 @@ public class HardwareConfig {
     }
 
     public void rotateTurretRight() {
-        motorTurret.setTargetPosition(660);
         motorTurret.setPower(0);
+        motorTurret.setTargetPosition(660);
         motorTurret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorTurret.setPower(1);
         turretPos = 660;
@@ -312,8 +313,8 @@ public class HardwareConfig {
     }
 
     public void rotateTurretCenter() {
-        motorTurret.setTargetPosition(0);
         motorTurret.setPower(0);
+        motorTurret.setTargetPosition(0);
         motorTurret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorTurret.setPower(1);
         turretPos = 0;

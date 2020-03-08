@@ -11,6 +11,9 @@ public class ContolTeleghidat extends OpMode {
     HardwareConfig hardware = null;
     Trigger liftHomingTrig = new Trigger(0);
     Trigger dpadTrig = new Trigger(0);
+    Trigger liftTrig = new Trigger(0);
+    int liftLevel = 0;
+    int levelPreset[] = {0, -650, -800, -1150, -1580, -2050, -2720, -3680, -4770};
     @Override
     public void init() {
         hardware = new HardwareConfig();
@@ -34,10 +37,31 @@ public class ContolTeleghidat extends OpMode {
     @Override
     public void loop() {
 
+        if(gamepad1.a){
+            hardware.SPEED_MECANUM_X = 0.4;
+            hardware.SPEED_MECANUM_Y = 0.3;
+        }
+        else{
+            hardware.SPEED_MECANUM_X = 0.6;
+            hardware.SPEED_MECANUM_Y = 0.5;
+        }
+
+        hardware.mecanum.moveXYR(
+                gamepad1.left_stick_x * hardware.SPEED_MECANUM_X,
+                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_Y,
+                gamepad1.right_stick_x * hardware.SPEED_MECANUM_ROTATION
+        );
+
         if(!hardware.isLiftHoming && Math.abs(gamepad2.right_stick_y) > 0.1) {
             hardware.setLiftPower(gamepad2.right_stick_y);
             isLiftActive = false;
         }
+
+        hardware.mecanum.moveXYR(
+                gamepad1.left_stick_x * hardware.SPEED_MECANUM_X,
+                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_Y,
+                gamepad1.right_stick_x * hardware.SPEED_MECANUM_ROTATION
+        );
 
         if(!hardware.isLiftHoming && Math.abs(gamepad2.right_stick_y) < 0.1 && !isLiftActive) {
             hardware.motorLift.setTargetPosition(hardware.motorLift.getCurrentPosition());
@@ -46,16 +70,27 @@ public class ContolTeleghidat extends OpMode {
             hardware.liftRunMode = DcMotor.RunMode.RUN_TO_POSITION;
         }
 
-
-
         if(gamepad1.left_bumper) hardware.grabBuildPlate();
         if(gamepad1.right_bumper) hardware.releaseBuildPlate();
+
+        hardware.mecanum.moveXYR(
+                gamepad1.left_stick_x * hardware.SPEED_MECANUM_X,
+                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_Y,
+                gamepad1.right_stick_x * hardware.SPEED_MECANUM_ROTATION
+        );
 
 
         if(liftHomingTrig.getState() && gamepad2.dpad_down){
             hardware.startLiftHoming();
             liftHomingTrig = new Trigger(500);
+            liftLevel = 0;
         }
+
+        hardware.mecanum.moveXYR(
+                gamepad1.left_stick_x * hardware.SPEED_MECANUM_X,
+                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_Y,
+                gamepad1.right_stick_x * hardware.SPEED_MECANUM_ROTATION
+        );
 
 
         if(checkBlock == false){
@@ -93,15 +128,27 @@ public class ContolTeleghidat extends OpMode {
             else if(gamepad2.left_stick_x == 0 && !hardware.isTurretActive) hardware.setTurretPower(0);
         }
 
+        hardware.mecanum.moveXYR(
+                gamepad1.left_stick_x * hardware.SPEED_MECANUM_X,
+                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_Y,
+                gamepad1.right_stick_x * hardware.SPEED_MECANUM_ROTATION
+        );
+
         if(gamepad2.right_bumper) {
             hardware.mecanum.killSwitch();
             hardware.lowerLiftServo();
-            hardware.sleep(700);
+            hardware.sleep(500);
             hardware.startSuction();
             hardware.sleep(700);
             hardware.raiseLiftServo();
             checkBlock = true;
         }
+
+        hardware.mecanum.moveXYR(
+                gamepad1.left_stick_x * hardware.SPEED_MECANUM_X,
+                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_Y,
+                gamepad1.right_stick_x * hardware.SPEED_MECANUM_ROTATION
+        );
 
         if(gamepad2.left_bumper && !isSliderActive) {
             hardware.mecanum.killSwitch();
@@ -118,7 +165,13 @@ public class ContolTeleghidat extends OpMode {
             hardware.setSliderPower(1);
         }
 
-        if(Math.abs(gamepad2.left_stick_x) > 0.3 && !hardware.isTurretActive) {
+        hardware.mecanum.moveXYR(
+                gamepad1.left_stick_x * hardware.SPEED_MECANUM_X,
+                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_Y,
+                gamepad1.right_stick_x * hardware.SPEED_MECANUM_ROTATION
+        );
+
+        if(Math.abs(gamepad2.left_stick_x) > 0.5 && !hardware.isTurretActive) {
             if(hardware.turretHomingSwitch.isPressed()) {
                 if(gamepad2.left_stick_x < 0) {
                     lockDirection = -1;
@@ -134,23 +187,43 @@ public class ContolTeleghidat extends OpMode {
                 }
             }
         }
+        else if(!hardware.isTurretActive) hardware.motorTurret.setPower(0);
 
         hardware.mecanum.moveXYR(
-                gamepad1.left_stick_x * hardware.SPEED_MECANUM_STRAFE,
-                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_STRAFE,
+                gamepad1.left_stick_x * hardware.SPEED_MECANUM_X,
+                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_Y,
                 gamepad1.right_stick_x * hardware.SPEED_MECANUM_ROTATION
         );
 
         hardware.motorRuleta.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
 
         if(!isSliderActive) hardware.setSliderPower(gamepad2.left_trigger-gamepad2.right_trigger);
-        hardware.sanityCheck();
-        if(gamepad2.a) {
+
+        if(liftTrig.getState() && gamepad2.y) {
+            if(liftLevel < levelPreset.length - 1) liftLevel += 1;
             isLiftActive = true;
-            hardware.setLiftLevel(-650);
+            hardware.setLiftLevel(levelPreset[liftLevel]);
+            liftTrig = new Trigger(500);
+        }
+        else if(liftTrig.getState() && gamepad2.a){
+            if(liftLevel > 1) liftLevel -= 1;
+            isLiftActive = true;
+            hardware.setLiftLevel(levelPreset[liftLevel]);
+            liftTrig = new Trigger(500);
         }
         else if(isLiftActive && hardware.currentLiftPos == hardware.motorLift.getCurrentPosition()) {
             isLiftActive = false;
         }
+
+        hardware.mecanum.moveXYR(
+                gamepad1.left_stick_x * hardware.SPEED_MECANUM_X,
+                - gamepad1.left_stick_y * hardware.SPEED_MECANUM_Y,
+                gamepad1.right_stick_x * hardware.SPEED_MECANUM_ROTATION
+        );
+
+        telemetry.addData("Lift Pos: ", hardware.currentLiftPos);
+        telemetry.update();
+
+        hardware.sanityCheck();
     }
 }

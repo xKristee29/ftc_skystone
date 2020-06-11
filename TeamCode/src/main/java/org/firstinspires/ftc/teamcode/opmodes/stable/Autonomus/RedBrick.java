@@ -5,16 +5,19 @@ import android.graphics.Color;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.apis.testing.HxIMU;
 import org.firstinspires.ftc.teamcode.opmodes.stable.HardwareConfig;
 
-import static org.firstinspires.ftc.teamcode.apis.testing.Utils.sleep;
-
-@Autonomous(name = "BlueBrick", group = "Complet")
-public class BlueBrick extends LinearOpMode {
+@Autonomous(name = "RedBrick", group = "Complet")
+public class RedBrick extends LinearOpMode {
 
     private HardwareConfig hardware = null;
     private ColorSensor colorSensorLine = null,
@@ -52,8 +55,9 @@ public class BlueBrick extends LinearOpMode {
         hardware = new HardwareConfig();
         hardware.initHardware(hardwareMap);
         throwBlock();
-
     }
+
+    double rotationCorrectionImu = 0;
 
     public final void sleepImuHold(long milliseconds, double x, double y, double r, double targetAngle) {
         long currentTime = System.currentTimeMillis();
@@ -136,7 +140,7 @@ public class BlueBrick extends LinearOpMode {
             long brickSwitch = 700;
             long podBrick = 3000;
             long parkLine = 800;
-            long extractBrick = 300;
+            long extractBrick = 500;
 
             brick = 0;
             switch (brick){
@@ -178,7 +182,7 @@ public class BlueBrick extends LinearOpMode {
 
                     brick++;
 
-                    sleepImuHold(brickSwitch, 0.7,0,0,targetAngle);
+                    sleepImuHold(brickSwitch, -0.7,0,0,targetAngle);
                     hardware.mecanum.killSwitch();
 
                 case 1:
@@ -218,7 +222,7 @@ public class BlueBrick extends LinearOpMode {
 
                     brick++;
 
-                    sleepImuHold(brickSwitch, 0.7,0,0,targetAngle);
+                    sleepImuHold(brickSwitch, -0.7,0,0,targetAngle);
                     hardware.mecanum.killSwitch();
 
             }
@@ -226,50 +230,92 @@ public class BlueBrick extends LinearOpMode {
 
             sleepImuHold(extractBrick, 0,-0.7,0,targetAngle);
 
-            sleepImuHold(podBrick+brick*brickSwitch, -0.7,0,0,targetAngle);
+            sleepImuHold(podBrick+brick*brickSwitch, 0.7,0,0,targetAngle);
 
             hardware.mecanum.killSwitch();
             throwBlock();
 
-            sleepImuHold(podBrick+(brick+2)*brickSwitch*105/100, 0.7,0,0,targetAngle);
+            if(brick <= 1){
 
-            while (!isStopRequested()) {
+                sleepImuHold(podBrick+(brick+2)*brickSwitch*12/10, -0.7,0,0,targetAngle);
 
-                hardware.localization.update();
+                while (!isStopRequested()) {
 
-                telemetry.addData("dist: ", hardware.localization.distanceFront.lastReadout);
-                telemetry.update();
+                    hardware.localization.update();
 
-                if(isStopRequested()) throw new InterruptedException();
+                    telemetry.addData("dist: ", hardware.localization.distanceFront.lastReadout);
+                    telemetry.update();
 
-                x = 0;
-                y = + hardware.localization.getCorrectionSpeedFrontDistance(frontWall, 300, 520, 0) * 0.8;
-                rotationSpeed = hxIMU.getCorrection(targetAngle);
+                    if(isStopRequested()) throw new InterruptedException();
 
-                colorHSV = Color.argb(colorSensorBlock.alpha(), colorSensorBlock.red(), colorSensorBlock.green(), colorSensorBlock.blue());
-                sat = JavaUtil.colorToSaturation(colorHSV);
-                val = JavaUtil.colorToValue(colorHSV);
+                    x = 0;
+                    y = + hardware.localization.getCorrectionSpeedFrontDistance(frontWall, 300, 520, 0) * 0.8;
+                    rotationSpeed = hxIMU.getCorrection(targetAngle);
 
-                if(y <= 0.1 && hardware.localization.distanceFront.lastReadout > 30) break;
+                    colorHSV = Color.argb(colorSensorBlock.alpha(), colorSensorBlock.red(), colorSensorBlock.green(), colorSensorBlock.blue());
+                    sat = JavaUtil.colorToSaturation(colorHSV);
+                    val = JavaUtil.colorToValue(colorHSV);
+
+                    if(y <= 0.1 && hardware.localization.distanceFront.lastReadout > 30) break;
 
 
-                hardware.mecanum.moveXYR(x, y, rotationSpeed);
+                    hardware.mecanum.moveXYR(x, y, rotationSpeed);
 
-                Thread.yield();
+                    Thread.yield();
+
+                }
+
+                hardware.mecanum.killSwitch();
+                catchBlock();
+
+                sleepImuHold(extractBrick, 0,-0.7,0,targetAngle);
+
+                sleepImuHold(podBrick+(brick+3)*brickSwitch, 0.7,0,0,targetAngle);
+
+            }
+            else {
+
+                sleepImuHold(podBrick, -0.7,0,0,targetAngle);
+
+                while (!isStopRequested()) {
+
+                    hardware.localization.update();
+
+                    telemetry.addData("dist: ", hardware.localization.distanceFront.lastReadout);
+                    telemetry.update();
+
+                    if(isStopRequested()) throw new InterruptedException();
+
+                    x = 0;
+                    y = + hardware.localization.getCorrectionSpeedFrontDistance(frontWall, 300, 520, 0) * 0.8;
+                    rotationSpeed = hxIMU.getCorrection(targetAngle);
+
+                    colorHSV = Color.argb(colorSensorBlock.alpha(), colorSensorBlock.red(), colorSensorBlock.green(), colorSensorBlock.blue());
+                    sat = JavaUtil.colorToSaturation(colorHSV);
+                    val = JavaUtil.colorToValue(colorHSV);
+
+                    if(y <= 0.1 && hardware.localization.distanceFront.lastReadout > 30) break;
+
+
+                    hardware.mecanum.moveXYR(x, y, rotationSpeed);
+
+                    Thread.yield();
+
+                }
+
+                hardware.mecanum.killSwitch();
+                catchBlock();
+
+                sleepImuHold(extractBrick, 0,-0.7,0,targetAngle);
+
+                sleepImuHold(podBrick, 0.7,0,0,targetAngle);
 
             }
 
             hardware.mecanum.killSwitch();
-            catchBlock();
-
-            sleepImuHold(extractBrick, 0,-0.7,0,targetAngle);
-
-            sleepImuHold(podBrick+(brick+3)*brickSwitch, -0.7,0,0,targetAngle);
-
-            hardware.mecanum.killSwitch();
             throwBlock();
 
-            sleepImuHold(parkLine, 0.7,0,0,targetAngle);
+            sleepImuHold(parkLine, -0.7,0,0,targetAngle);
 
             throw new InterruptedException();
         }
@@ -278,4 +324,3 @@ public class BlueBrick extends LinearOpMode {
         }
     }
 }
-

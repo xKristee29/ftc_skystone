@@ -77,7 +77,7 @@ public class BlueTava1 extends LinearOpMode {
 
             if (isStopRequested()) throw new InterruptedException();
             ////////////////////////////////////////////////////
-            leftWall = 150;
+            leftWall = 100;
             frontWall = 360;
 
             while (!isStopRequested()) {
@@ -121,9 +121,9 @@ public class BlueTava1 extends LinearOpMode {
             }
 
             hardware.mecanum.moveXYR(0.5, 0, 0);
-            sleep(2400);
+            sleep(2600);
             hardware.mecanum.moveXYR(0, -0.4, 0);
-            sleep(1000);
+            sleep(1200);
 
             throw new InterruptedException();
         }

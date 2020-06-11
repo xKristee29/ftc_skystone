@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.apis.testing.Mecanum;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 
-public class HardwareConfig {
+public class HardwareConfigCT {
 
     // Declaram motoarele
     public Mecanum mecanum = null;
@@ -152,19 +152,6 @@ public class HardwareConfig {
         swPump = hardwareMap.get(TouchSensor.class, "swPompa");
 
         swBrick = hardwareMap.get(TouchSensor.class,"swBrick");
-
-        gyro = new HxIMU();
-
-        BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu 1");
-        BNO055IMU.Parameters imuParams = new BNO055IMU.Parameters();
-        imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imuParams.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        imuParams.mode = BNO055IMU.SensorMode.IMU;
-        imu.initialize(imuParams);
-        while (!Thread.interrupted() && !imu.isGyroCalibrated()){
-            Thread.yield();
-        }
-        gyro.init(imu);
     }
 
     //LIFT

@@ -33,7 +33,7 @@ public class RedTava1 extends LinearOpMode {
 
             ///////////////////////////////////////////////////
             leftWall  = 400;
-            rearWall = 200;
+            rearWall = 350;
             while (!isStopRequested()) {
 
                 hardware.localization.update();
@@ -44,11 +44,11 @@ public class RedTava1 extends LinearOpMode {
                 y = - hardware.localization.getCorrectionSpeedRearDistance(rearWall, 400, 400, 0.1)*0.5;
                 rotationSpeed = hardware.gyro.getCorrection(targetAngle);
 
-                if(x <= 0.15 && y <= 0.15) break;
+                if(x <= 0.15 && y == 0) break;
 
                 hardware.mecanum.moveXYR(x, y, rotationSpeed);
 
-                telemetry.addData("SD4: ",hardware.localization.distanceRear);
+                telemetry.addData("SD4: ",hardware.localization.distanceRear.lastReadout);
                 telemetry.update();
 
                 Thread.yield();
@@ -77,7 +77,7 @@ public class RedTava1 extends LinearOpMode {
 
             if (isStopRequested()) throw new InterruptedException();
             ////////////////////////////////////////////////////
-            leftWall = 150;
+            leftWall = 100;
             rearWall = 300;
 
             while (!isStopRequested()) {
@@ -104,7 +104,7 @@ public class RedTava1 extends LinearOpMode {
             sleep(500);
             ////////////////////////////////////////////////////
             leftWall = 100;
-            rearWall = 900;
+            rearWall = 1100;
 
             while (!isStopRequested()) {
 
@@ -115,11 +115,11 @@ public class RedTava1 extends LinearOpMode {
                 y = - hardware.localization.getCorrectionSpeedRearDistance(rearWall, 350, 400, 0.25)*0.5;
                 x = 0;
                 rotationSpeed = hardware.gyro.getCorrection(targetAngle);
-                if(x == 0 && y == 0 && rotationSpeed < 0.15) break;
+                if(y == 0 && rotationSpeed < 0.15) break;
 
                 hardware.mecanum.moveXYR(x, y, rotationSpeed);
 
-                telemetry.addData("SD4: ",hardware.localization.distanceRear);
+                telemetry.addData("SD4: ",hardware.localization.distanceRear.lastReadout);
                 telemetry.update();
 
                 Thread.yield();
@@ -129,7 +129,7 @@ public class RedTava1 extends LinearOpMode {
             hardware.mecanum.moveXYR(0.5, 0, 0);
             sleep(2400);
             hardware.mecanum.moveXYR(0, 0.4, 0);
-            sleep(1000);
+            sleep(1200);
 
             throw new InterruptedException();
         }

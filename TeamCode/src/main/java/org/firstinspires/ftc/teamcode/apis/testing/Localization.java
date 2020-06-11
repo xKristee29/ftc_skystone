@@ -113,9 +113,9 @@ public class Localization {
     }
 
     public double getCorrectionSpeedRearDistance(double target) {
-        final double PROPORTIONAL_COEF = 200;
-        final double BRAKING_DIST = 220;
-        final double MARGIN_OF_ERR = 0.25;
+        final double PROPORTIONAL_COEF = 300;
+        final double BRAKING_DIST = 300;
+        final double MARGIN_OF_ERR = 0.1;
 
         return getCorrection(target, distanceRear.lastReadout, PROPORTIONAL_COEF, BRAKING_DIST, MARGIN_OF_ERR);
     }

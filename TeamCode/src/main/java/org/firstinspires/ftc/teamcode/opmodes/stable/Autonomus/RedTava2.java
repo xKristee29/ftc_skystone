@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.opmodes.stable.HardwareConfig;
 
-@Autonomous(name = "BlueTava2", group = "Complet")
-public class BlueTava2 extends LinearOpMode {
+@Autonomous(name = "RedTava2", group = "Complet")
+public class RedTava2 extends LinearOpMode {
 
     private HardwareConfig hardware = null;
 
@@ -29,11 +29,11 @@ public class BlueTava2 extends LinearOpMode {
 
             double x,y,rotationSpeed;
             double targetAngle = hardware.gyro.getValue();
-            double leftWall,frontWall;
+            double leftWall,rearWall;
 
             ///////////////////////////////////////////////////
             leftWall  = 400;
-            frontWall = 360;
+            rearWall = 350;
             while (!isStopRequested()) {
 
                 hardware.localization.update();
@@ -41,12 +41,15 @@ public class BlueTava2 extends LinearOpMode {
                 if(isStopRequested()) throw new InterruptedException();
 
                 x = - hardware.localization.getCorrectionSpeedLeftDistance(leftWall, 400, 520, 0.6)*0.5;
-                y = + hardware.localization.getCorrectionSpeedFrontDistance(frontWall, 400, 520, 0.3)*0.5;
+                y = - hardware.localization.getCorrectionSpeedRearDistance(rearWall, 400, 400, 0.1)*0.5;
                 rotationSpeed = hardware.gyro.getCorrection(targetAngle);
 
-                if(x <= 0.15 && y <= 0.15) break;
+                if(x <= 0.15 && y == 0) break;
 
                 hardware.mecanum.moveXYR(x, y, rotationSpeed);
+
+                telemetry.addData("SD4: ",hardware.localization.distanceRear.lastReadout);
+                telemetry.update();
 
                 Thread.yield();
 
@@ -60,8 +63,6 @@ public class BlueTava2 extends LinearOpMode {
                 rotationSpeed = 0;
 
                 if(isStopRequested()) throw new InterruptedException();
-
-
 
                 hardware.mecanum.moveXYR(x, y, rotationSpeed);
 
@@ -77,7 +78,7 @@ public class BlueTava2 extends LinearOpMode {
             if (isStopRequested()) throw new InterruptedException();
             ////////////////////////////////////////////////////
             leftWall = 100;
-            frontWall = 360;
+            rearWall = 300;
 
             while (!isStopRequested()) {
 
@@ -85,12 +86,15 @@ public class BlueTava2 extends LinearOpMode {
 
                 if(isStopRequested())throw new InterruptedException();
 
-                y = hardware.localization.getCorrectionSpeedFrontDistance(frontWall, 350, 300, 0.25)*0.5;
+                y = - hardware.localization.getCorrectionSpeedRearDistance(rearWall, 350, 400, 0.25)*0.5;
                 x = (hardware.localization.distanceFrontLeft.lastReadout > leftWall) ? -0.5 : 0;
                 rotationSpeed = hardware.gyro.getCorrection(targetAngle);
                 if(x == 0 && y == 0 && rotationSpeed < 0.15) break;
 
                 hardware.mecanum.moveXYR(x, y, rotationSpeed);
+
+                telemetry.addData("SD4: ",hardware.localization.distanceRear);
+                telemetry.update();
 
                 Thread.yield();
 
@@ -100,7 +104,7 @@ public class BlueTava2 extends LinearOpMode {
             sleep(500);
             ////////////////////////////////////////////////////
             leftWall = 100;
-            frontWall = 1100;
+            rearWall = 1000;
 
             while (!isStopRequested()) {
 
@@ -108,19 +112,22 @@ public class BlueTava2 extends LinearOpMode {
 
                 if(isStopRequested())throw new InterruptedException();
 
-                y = hardware.localization.getCorrectionSpeedFrontDistance(frontWall, 350, 300, 0.25)*0.5;
+                y = - hardware.localization.getCorrectionSpeedRearDistance(rearWall, 350, 400, 0.25)*0.5;
                 x = 0;
                 rotationSpeed = hardware.gyro.getCorrection(targetAngle);
-                if(x == 0 && y == 0 && rotationSpeed < 0.15) break;
+                if(y == 0 && rotationSpeed < 0.15) break;
 
                 hardware.mecanum.moveXYR(x, y, rotationSpeed);
+
+                telemetry.addData("SD4: ",hardware.localization.distanceRear.lastReadout);
+                telemetry.update();
 
                 Thread.yield();
 
             }
 
-            hardware.mecanum.moveXYR(0, -0.4, 0);
-            sleep(1200);
+            hardware.mecanum.moveXYR(0, 0.4, 0);
+            sleep(900);
 
             throw new InterruptedException();
         }

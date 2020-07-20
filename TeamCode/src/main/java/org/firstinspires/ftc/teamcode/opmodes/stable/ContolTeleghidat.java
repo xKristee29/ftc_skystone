@@ -24,8 +24,7 @@ public class ContolTeleghidat extends OpMode {
     public void init() {
         hardware = new HardwareConfigCT();
         hardware.initHardware(hardwareMap);
-        telemetry.addData(">>", "Press play to pay respect");
-        telemetry.update();
+        
     }
 
     public void start() {

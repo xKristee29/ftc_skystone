@@ -8,7 +8,7 @@ public class CrHardware {
     public CrDistanceSensors distSensors = null;
     public double speed = 0.7;
     public int timeX = 1700;
-    public int timeY = 1000;
+    public int timeY = 1100;
 
     public void init(HardwareMap hardwareMap){
 

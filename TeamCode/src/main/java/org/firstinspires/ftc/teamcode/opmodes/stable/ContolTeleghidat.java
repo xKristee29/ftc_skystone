@@ -24,6 +24,7 @@ public class ContolTeleghidat extends OpMode {
     public void init() {
         hardware = new HardwareConfigCT();
         hardware.initHardware(hardwareMap);
+        
     }
 
     public void start() {

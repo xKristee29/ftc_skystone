@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp
+@TeleOp(name = "TestAlex")
 public class test extends LinearOpMode {
 
     DcMotor SFmot = null;
@@ -20,8 +20,8 @@ public class test extends LinearOpMode {
         SSmot = hardwareMap.get(DcMotor.class, "SSmot");
         DSmot = hardwareMap.get(DcMotor.class, "DSmot");
 
-        DFmot.setDirection(DcMotorSimple.Direction.REVERSE);
-        DSmot.setDirection(DcMotorSimple.Direction.REVERSE);
+        SFmot.setDirection(DcMotorSimple.Direction.REVERSE);
+        SSmot.setDirection(DcMotorSimple.Direction.REVERSE);
 
         SFmot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         DFmot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -40,20 +40,12 @@ public class test extends LinearOpMode {
 
         while (opModeIsActive()){
 
-            SFmot.setPower(0.5);
-            DFmot.setPower(0.5);
-            SSmot.setPower(0.5);
-            DSmot.setPower(0.5);
-
-            sleep(3000);
-
-            SFmot.setPower(0);
-            DFmot.setPower(0);
-            SSmot.setPower(0);
-            DSmot.setPower(0);
-
-            sleep(3000);
-
+            double powerX = -gamepad1.right_stick_x;
+            double powerY = -gamepad1.right_stick_y;
+            SFmot.setPower(powerY-powerX);
+            DFmot.setPower(powerY+powerX);
+            SSmot.setPower(powerY-powerX);
+            DSmot.setPower(powerY+powerX);
             idle();
 
         }
